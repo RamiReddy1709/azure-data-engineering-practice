@@ -1,0 +1,6 @@
+scripts/day38/.venv/
+scripts/day38/__pycache__/
+scripts/day38/*.json
+scripts/day38/*.log
+scripts/day38/*.bak_*
+scripts/day38/step8_check_gold.py
