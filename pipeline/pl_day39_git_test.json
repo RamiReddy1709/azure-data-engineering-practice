@@ -1,0 +1,17 @@
+{
+	"name": "pl_day39_git_test",
+	"properties": {
+		"activities": [
+			{
+				"name": "wait_day39_git_test",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 5
+				}
+			}
+		],
+		"annotations": []
+	}
+}
