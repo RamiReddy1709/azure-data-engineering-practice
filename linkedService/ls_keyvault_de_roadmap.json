@@ -1,0 +1,12 @@
+{
+	"name": "ls_keyvault_de_roadmap",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Key Vault connection using the Data Factory managed identity",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-de-roadmap-dvrr26.vault.azure.net/"
+		}
+	}
+}

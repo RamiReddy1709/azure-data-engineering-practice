@@ -1,0 +1,15 @@
+{
+	"name": "adf-de-roadmap-dvrr26",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c53019a2-873e-4bc3-9dbb-5d7d5b4ddfc7",
+		"tenantId": "99cdb8d7-e551-41f4-8942-5c52aff5726f"
+	}
+}

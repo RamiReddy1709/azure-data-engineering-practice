@@ -1,0 +1,20 @@
+{
+	"name": "ds_binary_raw_orders_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "orders.json",
+				"folderPath": "orders_json",
+				"fileSystem": "raw"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
