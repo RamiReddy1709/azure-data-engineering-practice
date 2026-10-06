@@ -1,0 +1,22 @@
+{
+	"name": "ds_http_owid_covid_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_owid_covid",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
