@@ -1,0 +1,10 @@
+{
+	"name": "ls_adls_stderoadmapdvrr26_mi",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://stderoadmapdvrr26.dfs.core.windows.net/"
+		}
+	}
+}
