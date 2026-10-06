@@ -1,0 +1,18 @@
+{
+	"name": "ds_adls_raw_orders_folder_binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "orders_json",
+				"fileSystem": "raw"
+			}
+		}
+	}
+}
