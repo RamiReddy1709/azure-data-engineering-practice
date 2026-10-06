@@ -1,0 +1,18 @@
+{
+	"name": "ds_http_open_meteo_weather_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_open_meteo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "v1/forecast?latitude=51.5072&longitude=-0.1276&current=temperature_2m,wind_speed_10m&timezone=Europe/London"
+			}
+		},
+		"schema": {}
+	}
+}
