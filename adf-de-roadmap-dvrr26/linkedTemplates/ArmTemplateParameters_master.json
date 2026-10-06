@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-de-roadmap-dvrr26"
+		},
+		"ls_adls_stderoadmapdvrr26_accountKey": {
+			"value": ""
+		},
+		"ls_adls_stderoadmapdvrr26_properties_typeProperties_url": {
+			"value": "https://stderoadmapdvrr26.dfs.core.windows.net/"
+		},
+		"ls_keyvault_de_roadmap_properties_typeProperties_baseUrl": {
+			"value": "https://kv-de-roadmap-dvrr26.vault.azure.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
