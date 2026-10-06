@@ -11,6 +11,15 @@
 		"ls_adls_stderoadmapdvrr26_properties_typeProperties_url": {
 			"value": "https://stderoadmapdvrr26.dfs.core.windows.net/"
 		},
+		"ls_adls_stderoadmapdvrr26_mi_properties_typeProperties_url": {
+			"value": "https://stderoadmapdvrr26.dfs.core.windows.net/"
+		},
+		"ls_http_open_meteo_properties_typeProperties_url": {
+			"value": "https://api.open-meteo.com"
+		},
+		"ls_http_owid_covid_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com"
+		},
 		"ls_keyvault_de_roadmap_properties_typeProperties_baseUrl": {
 			"value": "https://kv-de-roadmap-dvrr26.vault.azure.net/"
 		},

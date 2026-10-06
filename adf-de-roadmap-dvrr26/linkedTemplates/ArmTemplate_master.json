@@ -15,6 +15,18 @@
 			"type": "string",
 			"defaultValue": "https://stderoadmapdvrr26.dfs.core.windows.net/"
 		},
+		"ls_adls_stderoadmapdvrr26_mi_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://stderoadmapdvrr26.dfs.core.windows.net/"
+		},
+		"ls_http_open_meteo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.open-meteo.com"
+		},
+		"ls_http_owid_covid_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com"
+		},
 		"ls_keyvault_de_roadmap_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://kv-de-roadmap-dvrr26.vault.azure.net/"
@@ -51,6 +63,15 @@
 					},
 					"ls_adls_stderoadmapdvrr26_properties_typeProperties_url": {
 						"value": "[parameters('ls_adls_stderoadmapdvrr26_properties_typeProperties_url')]"
+					},
+					"ls_adls_stderoadmapdvrr26_mi_properties_typeProperties_url": {
+						"value": "[parameters('ls_adls_stderoadmapdvrr26_mi_properties_typeProperties_url')]"
+					},
+					"ls_http_open_meteo_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_open_meteo_properties_typeProperties_url')]"
+					},
+					"ls_http_owid_covid_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_owid_covid_properties_typeProperties_url')]"
 					},
 					"ls_keyvault_de_roadmap_properties_typeProperties_baseUrl": {
 						"value": "[parameters('ls_keyvault_de_roadmap_properties_typeProperties_baseUrl')]"
