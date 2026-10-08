@@ -5,12 +5,21 @@
 			"referenceName": "ls_http_owid_covid",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"p_relative_url": {
+				"type": "string",
+				"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+				"relativeUrl": {
+					"value": "@dataset().p_relative_url",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
