@@ -334,6 +334,79 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_day43_metadata_driven_ingestion')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "foreach_ingestion_items",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.p_ingestion_items",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "execute_day42_copy_pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pl_day42_parameterized_http_csv_to_raw",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_source_relative_url": {
+												"value": "@item().source_relative_url",
+												"type": "Expression"
+											},
+											"p_sink_root_folder": {
+												"value": "@item().sink_root_folder",
+												"type": "Expression"
+											},
+											"p_sink_file_name": {
+												"value": "@item().sink_file_name",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_ingestion_items": {
+						"type": "array",
+						"defaultValue": [
+							{
+								"source_relative_url": "owid/covid-19-data/master/public/data/owid-covid-data.csv",
+								"sink_root_folder": "covid",
+								"sink_file_name": "owid-covid-data.csv"
+							}
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_day42_parameterized_http_csv_to_raw')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_covid_csv')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
