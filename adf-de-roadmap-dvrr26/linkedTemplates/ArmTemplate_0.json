@@ -784,6 +784,44 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/pl_day42_parameterized_http_csv_to_raw')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trg_day44_daily_metadata_ingestion')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_day43_metadata_driven_ingestion",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2026-10-08T14:00:00",
+						"timeZone": "GMT Standard Time",
+						"schedule": {
+							"minutes": [
+								17
+							],
+							"hours": [
+								14
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_day43_metadata_driven_ingestion')]"
+			]
 		}
 	]
 }
