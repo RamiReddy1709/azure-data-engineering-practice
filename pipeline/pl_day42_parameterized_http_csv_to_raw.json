@@ -1,0 +1,67 @@
+{
+	"name": "pl_day42_parameterized_http_csv_to_raw",
+	"properties": {
+		"activities": [
+			{
+				"name": "set_ingest_date",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "v_ingest_date",
+					"value": {
+						"value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "copy_http_csv_to_raw",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set_ingest_date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
+			}
+		],
+		"parameters": {
+			"p_source_relative_url": {
+				"type": "string",
+				"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+			},
+			"p_sink_root_folder": {
+				"type": "string",
+				"defaultValue": "covid"
+			},
+			"p_sink_file_name": {
+				"type": "string",
+				"defaultValue": "owid-covid-data.csv"
+			}
+		},
+		"variables": {
+			"v_ingest_date": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
