@@ -1,0 +1,25 @@
+{
+	"name": "ds_http_weather_binary_day50",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_http_open_meteo",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"relativeUrl": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().relativeUrl",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,42 @@
+{
+	"name": "ds_adls_binary_day50",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Filesystem": {
+				"type": "string",
+				"defaultValue": "raw"
+			},
+			"directory": {
+				"type": "string",
+				"defaultValue": "weather/day50_test"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "weather.json"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().fileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().fileSystem",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
