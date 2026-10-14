@@ -1,0 +1,84 @@
+{
+	"name": "pl_day50_ingest_http",
+	"properties": {
+		"activities": [
+			{
+				"name": "switch_source",
+				"type": "Switch",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@pipeline().parameters.p_source",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "weather",
+							"activities": [
+								{
+									"name": "copy_weather_to_raw",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_http_weather_binary_day50",
+											"type": "DatasetReference"
+										}
+									]
+								}
+							]
+						},
+						{
+							"value": "covid"
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"p_source": {
+				"type": "string",
+				"defaultValue": "weather"
+			},
+			"p_relativeUrl": {
+				"type": "string",
+				"defaultValue": "v1/forecast?latitude=51.5072&longitude=-0.1276&current=temperature_2m,wind_speed_10m&timezone=Europe/London"
+			},
+			"p_targetFolder": {
+				"type": "string",
+				"defaultValue": "weather"
+			},
+			"p_fileName": {
+				"type": "string",
+				"defaultValue": "weather.json"
+			},
+			"p_runDate": {
+				"type": "string",
+				"defaultValue": "2026-10-13"
+			}
+		},
+		"annotations": []
+	}
+}
