@@ -1,0 +1,39 @@
+{
+	"name": "ds_day50_sources_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "day50_sources.json",
+				"folderPath": "config",
+				"fileSystem": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"source": {
+					"type": "string"
+				},
+				"relativeUrl": {
+					"type": "string"
+				},
+				"targetFolder": {
+					"type": "string"
+				},
+				"fileName": {
+					"type": "string"
+				},
+				"Enabled": {
+					"type": "boolean"
+				}
+			}
+		}
+	}
+}
