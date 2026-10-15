@@ -50,7 +50,13 @@
 									"inputs": [
 										{
 											"referenceName": "ds_http_weather_binary_day50",
-											"type": "DatasetReference"
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeUrl": {
+													"value": "@pipeline().parameters.p_relativeUrl",
+													"type": "Expression"
+												}
+											}
 										}
 									],
 									"outputs": [
@@ -144,7 +150,8 @@
 								"message": {
 									"value": "@concat('Unsupported p_source: ', pipeline().parameters.p_source, '. Expected weather or covid.')",
 									"type": "Expression"
-								}
+								},
+								"errorCode": "UNKNOWN_SOURCE"
 							}
 						}
 					]
