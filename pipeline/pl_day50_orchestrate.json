@@ -5,14 +5,7 @@
 			{
 				"name": "lookup_sources",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "foreach_sources",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -43,7 +36,14 @@
 			{
 				"name": "foreach_sources",
 				"type": "ForEach",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "lookup_sources",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": []
 			}
 		],
