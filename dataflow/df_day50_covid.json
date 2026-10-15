@@ -1,0 +1,16 @@
+{
+	"name": "df_day50_covid",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"parameters{",
+				"     p_runDate as string",
+				"}"
+			]
+		}
+	}
+}
