@@ -133,6 +133,20 @@
 								}
 							]
 						}
+					],
+					"defaultActivities": [
+						{
+							"name": "fail_unknown_source",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "@concat('Unsupported p_source: ', pipeline().parameters.p_source, '. Expected weather or covid.')",
+									"type": "Expression"
+								}
+							}
+						}
 					]
 				}
 			}
