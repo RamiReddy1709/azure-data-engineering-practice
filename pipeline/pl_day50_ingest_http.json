@@ -39,6 +39,12 @@
 												"type": "BinaryReadSettings"
 											}
 										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											}
+										},
 										"enableStaging": false
 									},
 									"inputs": [
@@ -46,12 +52,86 @@
 											"referenceName": "ds_http_weather_binary_day50",
 											"type": "DatasetReference"
 										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_adls_binary_day50",
+											"type": "DatasetReference",
+											"parameters": {
+												"Filesystem": "raw",
+												"directory": {
+													"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+													"type": "Expression"
+												},
+												"fileName": "weather.json"
+											}
+										}
 									]
 								}
 							]
 						},
 						{
-							"value": "covid"
+							"value": "covid",
+							"activities": [
+								{
+									"name": "copy_covid_to_raw",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "GET"
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_http_covid_binary_day50",
+											"type": "DatasetReference",
+											"parameters": {
+												"relativeUrl": {
+													"value": "@pipeline().parameters.p_relativeUrl",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_adls_binary_day50",
+											"type": "DatasetReference",
+											"parameters": {
+												"Filesystem": "raw",
+												"directory": {
+													"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+													"type": "Expression"
+												},
+												"fileName": "weather.json"
+											}
+										}
+									]
+								}
+							]
 						}
 					]
 				}
