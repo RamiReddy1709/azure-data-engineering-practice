@@ -50,7 +50,47 @@
 						"value": "@activity('lookup_sources').output.value",
 						"type": "Expression"
 					},
-					"isSequential": true
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "execute_ingest_http",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "pl_day50_ingest_http",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"p_source": {
+										"value": "@item().source",
+										"type": "Expression"
+									},
+									"p_relativeUrl": {
+										"value": "@item().relativeUrl",
+										"type": "Expression"
+									},
+									"p_targetFolder": {
+										"value": "@item().targetFolder",
+										"type": "Expression"
+									},
+									"p_fileName": {
+										"value": "@item().fileName",
+										"type": "Expression"
+									},
+									"p_runDate": {
+										"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd')",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
 				}
 			}
 		],
