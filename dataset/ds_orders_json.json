@@ -1,0 +1,39 @@
+{
+	"name": "ds_orders_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "orders.json",
+				"folderPath": "orders_json",
+				"fileSystem": "raw"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"order_id": {
+					"type": "integer"
+				},
+				"customer_id": {
+					"type": "integer"
+				},
+				"product": {
+					"type": "string"
+				},
+				"quantity": {
+					"type": "integer"
+				},
+				"total_amount": {
+					"type": "number"
+				}
+			}
+		}
+	}
+}

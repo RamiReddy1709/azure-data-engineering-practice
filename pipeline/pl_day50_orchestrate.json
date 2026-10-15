@@ -53,47 +53,80 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "execute_ingest_http",
-							"type": "ExecutePipeline",
+							"name": "if_source_enabled",
+							"type": "IfCondition",
 							"dependsOn": [],
-							"policy": {
-								"secureInput": false
-							},
 							"userProperties": [],
 							"typeProperties": {
-								"pipeline": {
-									"referenceName": "pl_day50_ingest_http",
-									"type": "PipelineReference"
+								"expression": {
+									"value": "@equals(item().Enabled, true)",
+									"type": "Expression"
 								},
-								"waitOnCompletion": true,
-								"parameters": {
-									"p_source": {
-										"value": "@item().source",
-										"type": "Expression"
-									},
-									"p_relativeUrl": {
-										"value": "@item().relativeUrl",
-										"type": "Expression"
-									},
-									"p_targetFolder": {
-										"value": "@item().targetFolder",
-										"type": "Expression"
-									},
-									"p_fileName": {
-										"value": "@item().fileName",
-										"type": "Expression"
-									},
-									"p_runDate": {
-										"value": "@formatDateTime(pipeline().TriggerTime, 'yyyy-MM-dd')",
-										"type": "Expression"
+								"ifTrueActivities": [
+									{
+										"name": "execute_ingest_http",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"policy": {
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "pl_day50_ingest_http",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"p_source": {
+													"value": "@item().source",
+													"type": "Expression"
+												},
+												"p_relativeUrl": {
+													"value": "@item().relativeUrl",
+													"type": "Expression"
+												},
+												"p_targetFolder": {
+													"value": "@item().targetFolder",
+													"type": "Expression"
+												},
+												"p_fileName": {
+													"value": "@item().fileName",
+													"type": "Expression"
+												},
+												"p_runDate": {
+													"value": "@pipeline().parameters.p_runDate",
+													"type": "Expression"
+												}
+											}
+										}
 									}
-								}
+								]
 							}
 						}
 					]
 				}
+			},
+			{
+				"name": "CheckOrders",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
 			}
 		],
+		"parameters": {
+			"p_runDate": {
+				"type": "string",
+				"defaultValue": "2026-10-15"
+			}
+		},
 		"annotations": []
 	}
 }
