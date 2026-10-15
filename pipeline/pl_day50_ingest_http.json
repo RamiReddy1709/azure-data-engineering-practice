@@ -161,23 +161,23 @@
 		"parameters": {
 			"p_source": {
 				"type": "string",
-				"defaultValue": "weather"
+				"defaultValue": "covid"
 			},
 			"p_relativeUrl": {
 				"type": "string",
-				"defaultValue": "v1/forecast?latitude=51.5072&longitude=-0.1276&current=temperature_2m,wind_speed_10m&timezone=Europe/London"
+				"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
 			},
 			"p_targetFolder": {
 				"type": "string",
-				"defaultValue": "weather"
+				"defaultValue": "covid"
 			},
 			"p_fileName": {
 				"type": "string",
-				"defaultValue": "weather.json"
+				"defaultValue": "owid-covid-data.csv"
 			},
 			"p_runDate": {
 				"type": "string",
-				"defaultValue": "2026-10-13"
+				"defaultValue": "2026-10-15"
 			}
 		},
 		"annotations": []
