@@ -407,6 +407,201 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_day50_ingest_http')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "switch_source",
+						"type": "Switch",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"on": {
+								"value": "@pipeline().parameters.p_source",
+								"type": "Expression"
+							},
+							"cases": [
+								{
+									"value": "weather",
+									"activities": [
+										{
+											"name": "copy_weather_to_raw",
+											"type": "Copy",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "0.12:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"source": {
+													"type": "BinarySource",
+													"storeSettings": {
+														"type": "HttpReadSettings",
+														"requestMethod": "GET"
+													},
+													"formatSettings": {
+														"type": "BinaryReadSettings"
+													}
+												},
+												"sink": {
+													"type": "BinarySink",
+													"storeSettings": {
+														"type": "AzureBlobFSWriteSettings"
+													}
+												},
+												"enableStaging": false
+											},
+											"inputs": [
+												{
+													"referenceName": "ds_http_weather_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"relativeUrl": {
+															"value": "@pipeline().parameters.p_relativeUrl",
+															"type": "Expression"
+														}
+													}
+												}
+											],
+											"outputs": [
+												{
+													"referenceName": "ds_adls_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"Filesystem": "raw",
+														"directory": {
+															"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+															"type": "Expression"
+														},
+														"fileName": "weather.json"
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									"value": "covid",
+									"activities": [
+										{
+											"name": "copy_covid_to_raw",
+											"type": "Copy",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "0.12:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"source": {
+													"type": "BinarySource",
+													"storeSettings": {
+														"type": "HttpReadSettings",
+														"requestMethod": "GET"
+													},
+													"formatSettings": {
+														"type": "BinaryReadSettings"
+													}
+												},
+												"sink": {
+													"type": "BinarySink",
+													"storeSettings": {
+														"type": "AzureBlobFSWriteSettings"
+													}
+												},
+												"enableStaging": false
+											},
+											"inputs": [
+												{
+													"referenceName": "ds_http_covid_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"relativeUrl": {
+															"value": "@pipeline().parameters.p_relativeUrl",
+															"type": "Expression"
+														}
+													}
+												}
+											],
+											"outputs": [
+												{
+													"referenceName": "ds_adls_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"Filesystem": "raw",
+														"directory": {
+															"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+															"type": "Expression"
+														},
+														"fileName": "weather.json"
+													}
+												}
+											]
+										}
+									]
+								}
+							],
+							"defaultActivities": [
+								{
+									"name": "fail_unknown_source",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "@concat('Unsupported p_source: ', pipeline().parameters.p_source, '. Expected weather or covid.')",
+											"type": "Expression"
+										},
+										"errorCode": "UNKNOWN_SOURCE"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_source": {
+						"type": "string",
+						"defaultValue": "covid"
+					},
+					"p_relativeUrl": {
+						"type": "string",
+						"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+					},
+					"p_targetFolder": {
+						"type": "string",
+						"defaultValue": "covid"
+					},
+					"p_fileName": {
+						"type": "string",
+						"defaultValue": "owid-covid-data.csv"
+					},
+					"p_runDate": {
+						"type": "string",
+						"defaultValue": "2026-10-15"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_http_weather_binary_day50')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_binary_day50')]",
+				"[concat(variables('factoryId'), '/datasets/ds_http_covid_binary_day50')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_covid_csv')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -486,6 +681,53 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_http_owid_covid_csv')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_raw_covid_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_binary_day50')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Filesystem": {
+						"type": "string",
+						"defaultValue": "raw"
+					},
+					"directory": {
+						"type": "string",
+						"defaultValue": "weather/day50_test"
+					},
+					"fileName": {
+						"type": "string",
+						"defaultValue": "weather.json"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().fileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().fileSystem",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_stderoadmapdvrr26_mi')]"
 			]
 		},
 		{
@@ -653,6 +895,36 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_http_covid_binary_day50')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_http_owid_covid",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeUrl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().relativeUrl",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_http_owid_covid')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_http_open_meteo_weather_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -709,6 +981,77 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_http_owid_covid')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_http_weather_binary_day50')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_http_open_meteo",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"relativeUrl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().relativeUrl",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_http_open_meteo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_parquet_output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"fileSystem": {
+						"type": "string",
+						"defaultValue": "staging"
+					},
+					"directory": {
+						"type": "string",
+						"defaultValue": "orders/day50"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().fileSystem",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_stderoadmapdvrr26_mi')]"
 			]
 		},
 		{

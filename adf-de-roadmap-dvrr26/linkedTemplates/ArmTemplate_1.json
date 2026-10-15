@@ -1,0 +1,527 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-de-roadmap-dvrr26"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_day42_parameterized_http_csv_to_raw')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "set_ingest_date",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "v_ingest_date",
+							"value": {
+								"value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "copy_http_csv_to_raw",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set_ingest_date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_http_owid_covid_csv",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_relative_url": {
+										"value": "@pipeline().parameters.p_source_relative_url",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_raw_covid_csv",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_directory": {
+										"value": "@concat(pipeline().parameters.p_sink_root_folder, '/ingest_date=', variables('v_ingest_date'))",
+										"type": "Expression"
+									},
+									"p_file_name": {
+										"value": "@pipeline().parameters.p_sink_file_name",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_source_relative_url": {
+						"type": "string",
+						"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+					},
+					"p_sink_root_folder": {
+						"type": "string",
+						"defaultValue": "covid"
+					},
+					"p_sink_file_name": {
+						"type": "string",
+						"defaultValue": "owid-covid-data.csv"
+					}
+				},
+				"variables": {
+					"v_ingest_date": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_day50_ingest_http')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "switch_source",
+						"type": "Switch",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"on": {
+								"value": "@pipeline().parameters.p_source",
+								"type": "Expression"
+							},
+							"cases": [
+								{
+									"value": "weather",
+									"activities": [
+										{
+											"name": "copy_weather_to_raw",
+											"type": "Copy",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "0.12:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"source": {
+													"type": "BinarySource",
+													"storeSettings": {
+														"type": "HttpReadSettings",
+														"requestMethod": "GET"
+													},
+													"formatSettings": {
+														"type": "BinaryReadSettings"
+													}
+												},
+												"sink": {
+													"type": "BinarySink",
+													"storeSettings": {
+														"type": "AzureBlobFSWriteSettings"
+													}
+												},
+												"enableStaging": false
+											},
+											"inputs": [
+												{
+													"referenceName": "ds_http_weather_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"relativeUrl": {
+															"value": "@pipeline().parameters.p_relativeUrl",
+															"type": "Expression"
+														}
+													}
+												}
+											],
+											"outputs": [
+												{
+													"referenceName": "ds_adls_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"Filesystem": "raw",
+														"directory": {
+															"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+															"type": "Expression"
+														},
+														"fileName": "weather.json"
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									"value": "covid",
+									"activities": [
+										{
+											"name": "copy_covid_to_raw",
+											"type": "Copy",
+											"dependsOn": [],
+											"policy": {
+												"timeout": "0.12:00:00",
+												"retry": 0,
+												"retryIntervalInSeconds": 30,
+												"secureOutput": false,
+												"secureInput": false
+											},
+											"userProperties": [],
+											"typeProperties": {
+												"source": {
+													"type": "BinarySource",
+													"storeSettings": {
+														"type": "HttpReadSettings",
+														"requestMethod": "GET"
+													},
+													"formatSettings": {
+														"type": "BinaryReadSettings"
+													}
+												},
+												"sink": {
+													"type": "BinarySink",
+													"storeSettings": {
+														"type": "AzureBlobFSWriteSettings"
+													}
+												},
+												"enableStaging": false
+											},
+											"inputs": [
+												{
+													"referenceName": "ds_http_covid_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"relativeUrl": {
+															"value": "@pipeline().parameters.p_relativeUrl",
+															"type": "Expression"
+														}
+													}
+												}
+											],
+											"outputs": [
+												{
+													"referenceName": "ds_adls_binary_day50",
+													"type": "DatasetReference",
+													"parameters": {
+														"Filesystem": "raw",
+														"directory": {
+															"value": "@concat(pipeline().parameters.p_targetFolder, '/ingest_date=', pipeline().parameters.p_runDate)",
+															"type": "Expression"
+														},
+														"fileName": "weather.json"
+													}
+												}
+											]
+										}
+									]
+								}
+							],
+							"defaultActivities": [
+								{
+									"name": "fail_unknown_source",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "@concat('Unsupported p_source: ', pipeline().parameters.p_source, '. Expected weather or covid.')",
+											"type": "Expression"
+										},
+										"errorCode": "UNKNOWN_SOURCE"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_source": {
+						"type": "string",
+						"defaultValue": "covid"
+					},
+					"p_relativeUrl": {
+						"type": "string",
+						"defaultValue": "owid/covid-19-data/master/public/data/owid-covid-data.csv"
+					},
+					"p_targetFolder": {
+						"type": "string",
+						"defaultValue": "covid"
+					},
+					"p_fileName": {
+						"type": "string",
+						"defaultValue": "owid-covid-data.csv"
+					},
+					"p_runDate": {
+						"type": "string",
+						"defaultValue": "2026-10-15"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_covid_csv')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_owid_covid_to_raw",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_http_owid_covid_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_raw_covid_csv",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_directory": {
+										"value": "@concat('covid/ingest_date=', formatDateTime(utcNow(), 'yyyy-MM-dd'))",
+										"type": "Expression"
+									},
+									"p_file_name": "owid-covid-data.csv"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_day43_metadata_driven_ingestion')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "foreach_ingestion_items",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.p_ingestion_items",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "execute_day42_copy_pipeline",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "pl_day42_parameterized_http_csv_to_raw",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_source_relative_url": {
+												"value": "@item().source_relative_url",
+												"type": "Expression"
+											},
+											"p_sink_root_folder": {
+												"value": "@item().sink_root_folder",
+												"type": "Expression"
+											},
+											"p_sink_file_name": {
+												"value": "@item().sink_file_name",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"p_ingestion_items": {
+						"type": "array",
+						"defaultValue": [
+							{
+								"source_relative_url": "owid/covid-19-data/master/public/data/owid-covid-data.csv",
+								"sink_root_folder": "covid",
+								"sink_file_name": "owid-covid-data.csv"
+							}
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_day42_parameterized_http_csv_to_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trg_day44_daily_metadata_ingestion')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_day43_metadata_driven_ingestion",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2026-10-08T14:00:00",
+						"timeZone": "GMT Standard Time",
+						"schedule": {
+							"minutes": [
+								17
+							],
+							"hours": [
+								14
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_day43_metadata_driven_ingestion')]"
+			]
+		}
+	]
+}
