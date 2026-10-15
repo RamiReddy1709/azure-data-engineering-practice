@@ -1,0 +1,36 @@
+{
+	"name": "ds_parquet_output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_adls_stderoadmapdvrr26_mi",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"fileSystem": {
+				"type": "string",
+				"defaultValue": "staging"
+			},
+			"directory": {
+				"type": "string",
+				"defaultValue": "orders/day50"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().fileSystem",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
