@@ -12,13 +12,27 @@
 					"name": "srcCovid"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_parquet_output",
+						"type": "DatasetReference"
+					},
+					"name": "sinkCovid"
+				}
+			],
 			"transformations": [
 				{
 					"name": "selectCovid"
 				},
 				{
 					"name": "castCovid"
+				},
+				{
+					"name": "filterUK"
+				},
+				{
+					"name": "dailyCovid"
 				}
 			],
 			"scriptLines": [
@@ -99,7 +113,19 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCovid",
 				"selectCovid derive(date = date,",
-				"          new_cases = toDouble(new_cases)) ~> castCovid"
+				"          new_cases = toDouble(new_cases)) ~> castCovid",
+				"castCovid filter(country == 'United Kingdom' && !isNull(date)) ~> filterUK",
+				"filterUK aggregate(groupBy(date,",
+				"          country),",
+				"     new_cases = max(new_cases)) ~> dailyCovid",
+				"dailyCovid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkCovid"
 			]
 		}
 	}
